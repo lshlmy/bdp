@@ -1,0 +1,29 @@
+group 'com.lshlmy'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'io.spring.dependency-management'
+
+ext { springBootVersion = '2.0.0.BUILD-SNAPSHOT' }
+
+buildscript {
+
+    repositories {
+        mavenLocal()
+        /*maven { url "http://maven.aliyun.com/nexus/content/groups/public" }*/
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+        jcenter()
+    }
+    dependencies { classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") }
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter'){
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+}
+
+
+dependencyManagement {
+    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
+}

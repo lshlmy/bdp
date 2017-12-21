@@ -1,0 +1,140 @@
+group 'com.lshlmy'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'idea'
+subprojects {
+    group = "com.lshlmy"
+    version = qualifyVersionIfNecessary(version)
+
+    ext {
+        hsqldbVersion = "2.4.0"
+        jackson2Version = "2.9.2"
+        junitVersion = "4.12"
+        log4jVersion = "2.10.0"
+        slf4jVersion = "1.7.25"
+        tomcatVersion = "8.5.23"
+        cCollectionsVersion = "4.1"
+        cLangVersion = "3.7"
+        cIoVersion = "2.6"
+        cFileuploadVersion = "1.3.3"
+        httpclientVersion = "4.5.3"
+        httpcoreVersion = "4.4.8"
+        guavaVersion = "23.0"
+        cCodecVersion = "1.11"
+    }
+
+    ext.gradleScriptDir = "${rootProject.projectDir}/gradle"
+    ext.springBootVersion = "2.0.0.BUILD-SNAPSHOT"
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+
+    compileJava {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+        options.encoding = 'UTF-8'
+    }
+
+    compileTestJava {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+        options.encoding = 'UTF-8'
+        options.compilerArgs += "-parameters"
+    }
+
+
+    repositories {
+        mavenLocal()
+        /*maven { url "http://maven.aliyun.com/nexus/content/groups/public" }*/
+        mavenCentral()
+        jcenter()
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url 'http://maven.springframework.org/release' }
+        maven { url 'http://maven.springframework.org/milestone' }
+    }
+
+    dependencies {
+        testCompile("junit:junit:${junitVersion}")
+        compile(
+                "org.slf4j:slf4j-api:${slf4jVersion}"
+        )
+        compile(
+                //commons-logging与log4j2桥接
+                "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
+                //log4j2
+                "org.apache.logging.log4j:log4j-core:${log4jVersion}",
+                "org.apache.logging.log4j:log4j-api:${log4jVersion}",
+                //用于slf4j与log4j2桥接
+                "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}",
+                //web工程需要的log4j2
+                "org.apache.logging.log4j:log4j-web:${log4jVersion}"
+        )
+        compile(
+                "org.apache.commons:commons-collections4:${cCollectionsVersion}",
+                "org.apache.commons:commons-lang3:${cLangVersion}",
+                "com.google.guava:guava:${guavaVersion}",
+                "commons-fileupload:commons-fileupload:${cFileuploadVersion}",
+                "commons-io:commons-io:${cIoVersion}",
+                "commons-codec:commons-codec:${cCodecVersion}",
+                "org.apache.httpcomponents:httpclient:${httpclientVersion}",
+                "org.apache.httpcomponents:httpcore:${httpcoreVersion}"
+        )
+    }
+
+    jar {
+        manifest {
+            attributes("Implementation-Title": "Gradle")
+        }
+    }
+
+    // 显示当前项目下所有用于 compile 的 jar.
+    task listJars(description: 'Display all compile jars.') << {
+        configurations.compile.each { File file -> println file.name }
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
+
+
+
+
+idea {
+    project {
+        jdkName = '1.8'
+        languageLevel = JavaVersion.VERSION_1_8
+        vcs = 'Git'
+        ipr {
+            beforeMerged { project ->
+                project.modulePaths.clear()
+            }
+        }
+    }
+    module {
+        iml {
+            beforeMerged { module ->
+                module.dependencies.clear()
+            }
+            whenMerged { module ->
+                module.dependencies*.exported = true
+            }
+        }
+    }
+
+
+}
+
+//处理版本方法
+def qualifyVersionIfNecessary(version) {
+    if (rootProject.hasProperty("BRANCH_NAME")) {
+        def qualifier = rootProject.getProperty("BRANCH_NAME")
+        if (qualifier.startsWith("SPR-")) {
+            return version.replace('BUILD', qualifier)
+        }
+    }
+    return version
+}
