@@ -1,0 +1,71 @@
+group 'com.lshlmy'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'io.spring.dependency-management'
+
+ext {
+    springBootVersion = '2.0.0.BUILD-SNAPSHOT'
+    hadoopVersion = '2.6.0'
+    hbaseVersion = '1.2.6'
+    springDataHadoopVersion = '2.5.0.RELEASE'
+}
+
+buildscript {
+
+    repositories {
+        mavenLocal()
+        /*maven { url "http://maven.aliyun.com/nexus/content/groups/public" }*/
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+        jcenter()
+    }
+    dependencies { classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") }
+}
+
+configurations {
+    all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+}
+
+dependencies {
+    compile(
+            "org.springframework.boot:spring-boot-starter",
+            "org.springframework.boot:spring-boot-starter-test"
+    )
+
+
+    compile(
+            "org.apache.hadoop:hadoop-common:${hadoopVersion}",
+            "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}",
+            "org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}",
+            "org.apache.hadoop:hadoop-mapreduce-client-common:${hadoopVersion}",
+            "org.apache.hadoop:hadoop-mapreduce-client-jobclient:${hadoopVersion}",
+            "org.apache.hbase:hbase-client:${hbaseVersion}",
+            "org.springframework.data:spring-data-hadoop:${springDataHadoopVersion}",
+            "org.springframework.data:spring-data-hadoop-boot:${springDataHadoopVersion}"
+    )
+}
+
+
+dependencyManagement {
+    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
+}
+
+jar {
+    manifest {
+        attributes(
+                "Implementation-Title" : project.name,
+                "Implementation-Version": version
+        )
+        attributes(
+                "Main-Class": "MapReduceTest",
+                "Class-Path": "./lib/" + configurations.compile.collect { it.getName() }.join(' ./lib/')
+        )
+    }
+}
+
+
+
+task copyJars(type: Copy) {
+    from configurations.runtime
+    into 'build/libs/lib'
+}
