@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+<configuration>
+  <property>
+    <name>yarn.resourcemanager.hostname</name>
+    <value>lshlmy</value>
+    <description>ResourceManager机器所在的节点位置</description>
+  </property>
+  <property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+    <description>mapreduce.shuffle，在Yarn上开启MR的必须项</description>
+  </property>
+  <property>
+    <name>yarn.scheduler.minimum-allocation-mb</name>
+    <value>1024</value>
+    <description>调度时一个container能够申请的最小资源，默认值为1024MB</description>
+  </property>
+  <property>
+    <name>yarn.scheduler.maximum-allocation-mb</name>
+    <value>4096</value>
+    <description>调度时一个container能够申请的最大资源，默认值为8192MB</description>
+  </property>
+  <property>
+    <name>yarn.nodemanager.resource.memory-mb</name>
+    <value>4096</value>
+    <description>nodemanager能够申请的最大内存，默认值为8192MB</description>
+  </property>
+  <property>
+    <name>yarn.nodemanager.vmem-pmem-ratio</name>
+    <value>5</value>
+    <description>物理内存和虚拟内存比率</description>
+  </property>
+  <property>
+    <name>yarn.log-aggregation-enable</name>
+    <value>true</value>
+    <description>是否允许日志汇聚功能。建议开启</description>
+  </property>
+  <property>
+    <name>yarn.log.dir</name>
+    <value>/home/lshlmy/logs/yarn</value>
+    <description>存储container日志的地方</description>
+  </property>
+</configuration>

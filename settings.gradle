@@ -2,4 +2,5 @@ rootProject.name = 'bdp'
 include 'common'
 include 'web'
 include 'doc'
+include 'hadoop'
 
