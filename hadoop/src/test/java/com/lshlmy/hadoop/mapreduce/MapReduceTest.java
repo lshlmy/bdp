@@ -3,6 +3,9 @@ package com.lshlmy.hadoop.mapreduce;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
+import org.apache.hadoop.hbase.protobuf.ProtobufUtil;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -12,6 +15,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -24,6 +28,11 @@ import java.util.StringTokenizer;
 public class MapReduceTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MapReduceTest.class);
+
+    static {
+        System.setProperty("hadoop.home.dir", "D:\\文档\\hadoop");
+        System.setProperty("HADOOP_USER_NAME", "lshlmy");
+    }
 
     public static class TokenizerMapper extends
             Mapper<Object, Text, Text, IntWritable> {
@@ -62,15 +71,14 @@ public class MapReduceTest {
 
     @Test
     public void test() throws IOException {
-        System.setProperty("hadoop.home.dir", "D:\\文档\\hadoop");
-        System.setProperty("HADOOP_USER_NAME", "lshlmy");
+
         String[] ioArgs = new String[]{"/test/test_in/test1.txt", "/test/test_out"};
         Configuration conf = new JobConf(new Configuration(), MapReduceTest.class);
         conf.setQuietMode(false);
         //conf.set("mapred.job.tracker", "192.168.78.222");
         String[] otherArgs = new GenericOptionsParser(conf, ioArgs).getRemainingArgs();
 
-        FileSystem fs = FileSystem.get( conf);
+        FileSystem fs = FileSystem.get(conf);
         Path outPath = new Path("hdfs://192.168.78.222:9000/test/test_out");
         if (fs.exists(outPath)) {
             fs.delete(outPath, true);
@@ -88,10 +96,9 @@ public class MapReduceTest {
             //job.setJar("D:/project/Idea/bdp/hadoop/build/libs/hadoop-1.0-SNAPSHOT.jar");
             //job.setCombinerClass(Reduce.class);
 
-            //job.setJarByClass(MapReduceTest.class);
+            job.setJarByClass(MapReduceTest.class);
             job.setMapperClass(MapReduceTest.TokenizerMapper.class);
             job.setReducerClass(MapReduceTest.IntSumReduce.class);
-
 
             //设置输出类型
 
@@ -114,5 +121,25 @@ public class MapReduceTest {
             System.out.println("完成");
             IOUtils.closeStream(fs);
         }
+    }
+
+
+    @Test
+    public void test2() throws Exception{
+//        Configuration conf = new Configuration();
+//        Job job = Job.getInstance(conf, "Data Deduplication");
+//        //设置Map、Combine和Reduce处理类
+//        job.setJar("D:/project/Idea/bdp/hadoop/build/libs/hadoop-1.0-SNAPSHOT.jar");
+//        //job.setCombinerClass(Reduce.class);
+//        //job.getConfiguration().setClass("mapred.map.runner.class", MultithreadedMapRunner.class, MapRunnable.class);
+//        //job.getConfiguration().setBoolean("mapreduce.map.output.compress", true);
+//        job.setOutputFormatClass(NullOutputFormat.class);
+//        job.setJarByClass(MapReduceTest.class);
+//        Scan scan = new Scan();
+//        scan.setCaching(500);
+//        scan.setCacheBlocks(false);
+//        String tbName = "c_cons";
+//        TableMapReduceUtil.initTableMapperJob(tbName, scan, SolrHbaseIndexerMapper.class, null, null, job);
+//        System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
 }

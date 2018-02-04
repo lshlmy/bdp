@@ -3,18 +3,6 @@ version '1.0-SNAPSHOT'
 
 ext { springBootVersion = '2.0.0.BUILD-SNAPSHOT' }
 
-buildscript {
-    repositories {
-        mavenLocal()
-        /*maven { url "http://maven.aliyun.com/nexus/content/groups/public" }*/
-        maven { url "http://repo.spring.io/snapshot" }
-        maven { url "http://repo.spring.io/milestone" }
-        jcenter()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
-}
 
 apply plugin: 'war'
 apply plugin: 'org.springframework.boot'

@@ -94,7 +94,16 @@ public class HBaseTest {
 
     @Test
     public void test(){
+
         String result = myHBaseDAO.get("member", "scutshuxue", "info", "age");
         System.out.println("result:"+result);
+    }
+
+    public void test2() throws Exception{
+        Configuration conf = HBaseConfiguration.create();
+        try (Connection conn = ConnectionFactory.createConnection(conf)) {
+            conn.getAdmin();
+
+        }
     }
 }

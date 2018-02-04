@@ -1,30 +1,23 @@
 group 'com.lshlmy'
 version '1.0-SNAPSHOT'
 
+
+apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 ext {
     springBootVersion = '2.0.0.BUILD-SNAPSHOT'
     hadoopVersion = '2.6.0'
     hbaseVersion = '1.2.6'
+    yarnVersion = "2.6.0"
     springDataHadoopVersion = '2.5.0.RELEASE'
+    hadoopTestVersion = '2.6.0-mr1-cdh5.13.1'
+    hbaseMapreduceVersion = '2.0.0-alpha4'
+    solrjVersion = '7.2.0'
 }
 
-buildscript {
 
-    repositories {
-        mavenLocal()
-        /*maven { url "http://maven.aliyun.com/nexus/content/groups/public" }*/
-        maven { url "http://repo.spring.io/snapshot" }
-        maven { url "http://repo.spring.io/milestone" }
-        jcenter()
-    }
-    dependencies { classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") }
-}
 
-configurations {
-    all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-}
 
 dependencies {
     compile(
@@ -36,19 +29,21 @@ dependencies {
     compile(
             "org.apache.hadoop:hadoop-common:${hadoopVersion}",
             "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}",
+            "org.apache.hadoop:hadoop-mapreduce-client-app:${hadoopVersion}",
             "org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}",
             "org.apache.hadoop:hadoop-mapreduce-client-common:${hadoopVersion}",
             "org.apache.hadoop:hadoop-mapreduce-client-jobclient:${hadoopVersion}",
+            "org.apache.hadoop:hadoop-yarn-common:${yarnVersion}",
+            "org.apache.hbase:hbase-server:${hbaseVersion}",
             "org.apache.hbase:hbase-client:${hbaseVersion}",
+//            "org.apache.hbase:hbase-mapreduce:${hbaseMapreduceVersion}",
+            "org.apache.solr:solr-solrj:${solrjVersion}",
+//            "org.apache.hadoop:hadoop-test:${hadoopTestVersion}",
             "org.springframework.data:spring-data-hadoop:${springDataHadoopVersion}",
             "org.springframework.data:spring-data-hadoop-boot:${springDataHadoopVersion}"
     )
 }
 
-
-dependencyManagement {
-    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
-}
 
 jar {
     manifest {
@@ -60,6 +55,11 @@ jar {
                 "Main-Class": "MapReduceTest",
                 "Class-Path": "./lib/" + configurations.compile.collect { it.getName() }.join(' ./lib/')
         )
+    }
+    exclude()
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    into('lib') {
+        from configurations.runtime
     }
 }
 
